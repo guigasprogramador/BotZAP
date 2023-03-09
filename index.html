@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Enviar mensagem via WhatsApp</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      }
+
+      h1 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      input[type="text"],
+      textarea {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      button[type="submit"] {
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+
+      .mensagem-enviada {
+        background-color: #e6ffe6;
+        border: 1px solid #006600;
+        color: #006600;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      .mensagem-erro {
+        background-color: #ffe6e6;
+        border: 1px solid #cc0000;
+        color: #cc0000;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form-mensagem" method="post">
+      <h1>Enviar mensagem via WhatsApp</h1>
+      <label for="numero">Números de telefone (separados por vírgula)</label>
+      <input type="text" name="numero" id="numero" placeholder="Exemplo: +5511999999999, +5511888888888">
+      <label for="mensagem">Mensagem</label>
+      <textarea name="mensagem" id="mensagem" rows="5" placeholder="Digite sua mensagem aqui"></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(() => {
+        $('#form-mensagem').submit((e) => {
+          e.preventDefault();
+          const numeros = $('#numero').val().split(',');
+          const mensagem = $('#mensagem').val();
+          const token = 'seu_auth_token'; // substitua pelo seu auth token da Twilio
+
+          numeros.forEach((numero) => {
+            $.ajax({
+              url: `https://api.twilio.com/2010-04-01/Accounts/sua_account_sid/Messages.json`,
+              type: 'POST',
+              headers: {
+                'Authorization': `Basic ${btoa(`sua_account_sid:${token}`)}`,
+                'Content-Type': '          },
+          data: {
+            From: 'whatsapp:+14155238886', // número da Twilio
+            To: `whatsapp:${numero}`,
+            Body: mensagem
+          },
+          success: (response) => {
+            const mensagemEnviada = `
+              <div class="mensagem-enviada">
+                <p>Mensagem enviada para ${numero} com SID ${response.sid}</p>
+              </div>
+            `;
+            $('#resultado').append(mensagemEnviada);
+          },
+          error: (error) => {
+            const mensagemErro = `
+              <div class="mensagem-erro">
+                <p>Erro ao enviar mensagem para ${numero}: ${error.responseJSON.message}</p>
+              </div>
+            `;
+            $('#resultado').append(mensagemErro);
+          }
+        });
+      });
+    });
+  });
+</script>
+ </body>
+</html>
